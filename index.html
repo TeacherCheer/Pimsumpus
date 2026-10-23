@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>SpellType Survivor - จอมเวทแป้นพิมพ์เอาชีวิตรอด</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;800&family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./src/style.css">
+</head>
+<body>
+  <div id="game-container">
+    <canvas id="game-canvas"></canvas>
+
+    <!-- Overlay UI for Start, Pause, Game Over, and Level Up -->
+    <div id="ui-overlay" class="overlay active">
+      <!-- Start Screen -->
+      <div id="start-screen" class="screen-modal active">
+        <div class="pixel-badge">THAI TOUCH TYPING SURVIVOR</div>
+        <h1 class="game-title">จอมเวทแป้นพิมพ์</h1>
+        <h2 class="game-subtitle">SPELLTYPE SURVIVOR</h2>
+        
+        <div class="instructions-card">
+          <p class="highlight-text">🔥 Stage 1: ฝึกซ้อมฐานเวทมนตร์ด้วย <strong>"แป้นเหย้า" (Home Row)</strong></p>
+          <div class="home-row-preview">
+            <span class="key-tag pinky">ฟ</span>
+            <span class="key-tag ring">ห</span>
+            <span class="key-tag middle">ก</span>
+            <span class="key-tag index">ด</span>
+            <span class="key-divider">|</span>
+            <span class="key-tag index">่</span>
+            <span class="key-tag middle">า</span>
+            <span class="key-tag ring">ส</span>
+            <span class="key-tag pinky">ว</span>
+          </div>
+          <ul class="guide-bullets">
+            <li>✨ <strong>พิมพ์คำเหนือหัวมอนสเตอร์:</strong> ระบบ Auto-Lock ล็อกเป้าหมายที่ตรงกันทันที</li>
+            <li>⚡ <strong>Smart Dual Mode:</strong> ลืมสลับภาษาเป็นไทย? ไม่ต้องกังวล เล่นได้ทั้งคีย์บอร์ด TH และ EN</li>
+            <li>🛡️ <strong>Spacebar Dash:</strong> เมื่อเกจเต็ม กด Spacebar เพื่อระเบิดคลื่นผลักศัตรูถอยหลัง</li>
+            <li>🔮 <strong>Roguelite Perks:</strong> เลเวลอัปเพื่อเลือกเวทสายวรรณยุกต์ระเบิด หรือสระสายฟ้า!</li>
+          </ul>
+        </div>
+
+        <button id="btn-start" class="arcade-btn start-btn">เริ่มร่ายเวทมนตร์ (ENTER)</button>
+
+        <!-- 1-Click Mobile QR Launch -->
+        <div class="mobile-launch-box">
+          <button id="btn-toggle-qr" type="button" class="secondary-btn">📱 สแกน QR Code เล่นบนมือถือ / แท็บเล็ต</button>
+          <div id="qr-panel" class="qr-panel hidden">
+            <p class="qr-instructions">เปิดกล้องมือถือแล้วสแกนรูปนี้เพื่อเข้าเล่นได้ทันที (ต่อ Wi-Fi เดียวกัน):</p>
+            <div class="qr-wrapper">
+              <img id="qr-image" src="" alt="Scan QR Code" class="qr-code-img" />
+            </div>
+            <p id="qr-url-text" class="qr-url-text">http://192.168.1.5:5173/</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Level Up Modal (Roguelite Perk Selection) -->
+      <div id="levelup-screen" class="screen-modal">
+        <h2 class="level-title">✨ LEVEL UP! ✨</h2>
+        <p class="level-sub">เลือกเวทมนตร์ใหม่เพื่อเสริมพลังการเอาชีวิตรอด:</p>
+        <div id="perk-cards-container" class="cards-grid">
+          <!-- Dynamically populated via PerkSystem -->
+        </div>
+      </div>
+
+      <!-- Game Over Screen -->
+      <div id="gameover-screen" class="screen-modal">
+        <h2 class="gameover-title">💀 วงเวทพังทลาย 💀</h2>
+        <div class="stats-summary">
+          <div class="stat-box">
+            <span class="stat-label">เวลาที่รอดชีวิต</span>
+            <span id="stat-time" class="stat-value">00:00</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-label">ระดับเลเวล</span>
+            <span id="stat-level" class="stat-value">Lv.1</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-label">ความเร็วเฉลี่ย</span>
+            <span id="stat-wpm" class="stat-value">0 WPM</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-label">ความแม่นยำ</span>
+            <span id="stat-acc" class="stat-value">100%</span>
+          </div>
+          <div class="stat-box full-width">
+            <span class="stat-label">มอนสเตอร์ที่กำจัดได้</span>
+            <span id="stat-kills" class="stat-value">0 ตัว</span>
+          </div>
+        </div>
+        <button id="btn-restart" class="arcade-btn restart-btn">ลองใหม่อีกครั้ง (ENTER)</button>
+      </div>
+
+      <!-- Pause Screen -->
+      <div id="pause-screen" class="screen-modal">
+        <h2 class="pause-title">⏸️ พักการร่ายเวทมนตร์</h2>
+        <p>กด ESC หรือคลิกปุ่มด้านล่างเพื่อกลับเข้าสู่เกม</p>
+        <button id="btn-resume" class="arcade-btn">เล่นต่อ (ESC)</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="./src/main.ts"></script>
+</body>
+</html>
